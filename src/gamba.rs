@@ -57,26 +57,3 @@ impl SlotMachine {
         (x + 1) % SYMBOLS.len()
     }
 }
-
-pub fn spin_once() {
-    let mut random = rand::thread_rng();
-    draw_machine(&mut random);
-    print!("\x1b[2J");
-    io::stdout().flush().unwrap();
-    draw_machine(&mut random);
-}
-
-fn draw_machine(rng: &mut ThreadRng) {
-    let mut buff = Vec::with_capacity(SLOT_MACHINE_FMT_LENGTH + 5);
-    for byte in SLOT_MACHINE_FMT.as_bytes() {
-        if *byte == b'X' {
-            let symbol = SYMBOLS.choose(rng).unwrap().as_bytes();
-            buff.extend_from_slice(symbol);
-        } else {
-            buff.push(*byte);
-        }
-    }
-    let result = String::from_utf8(buff).unwrap();
-    print!("{result}");
-    io::stdout().flush().unwrap();
-}
