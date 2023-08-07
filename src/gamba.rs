@@ -55,7 +55,7 @@ impl SlotMachine {
                 let to_write = [place_cursor, toggle_insert_mode, emoji, toggle_insert_mode].concat();
                 stdout().write(to_write.as_slice()).unwrap();
                 stdout().flush().unwrap();
-
+                SlotMachine::magic();
                 break;
             } else if x.starts_with("7".as_bytes()) {
                 // println!("amg");
@@ -95,5 +95,12 @@ impl SlotMachine {
 
     fn inc_wrapping(x: usize) -> usize {
         (x + 1) % SYMBOLS.len()
+    }
+
+    fn magic() {
+        println!();
+        println!();
+        println!();
+        println!();
     }
 }
