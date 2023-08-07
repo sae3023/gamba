@@ -1,7 +1,4 @@
-use std::fmt::format;
 use std::io::{stdout, Write};
-use std::thread;
-use std::time::Duration;
 use rand::RngCore;
 use rand::rngs::ThreadRng;
 
@@ -52,10 +49,11 @@ impl SlotMachine {
         for x in self.state.as_slice()[119..119 + 65 + 9 * 3].windows(4) {
             if SlotMachine::contains_emoji(x) {
                 let place_cursor = format!("\x1B[4;{}f", offset + 5);
-                let emoji = SYMBOLS[self.first];
-                stdout().write_all(place_cursor.as_bytes()).unwrap();
-                stdout().flush().unwrap();
-                stdout().write_all(emoji.as_bytes()).unwrap();
+                let place_cursor = place_cursor.as_bytes();
+                let toggle_insert_mode = "\x1B[4h".as_bytes();
+                let emoji = SYMBOLS[self.first].as_bytes();
+                let to_write = [place_cursor, toggle_insert_mode, emoji, toggle_insert_mode].concat();
+                stdout().write_all(to_write.as_slice()).unwrap();
                 stdout().flush().unwrap();
 
                 break;
