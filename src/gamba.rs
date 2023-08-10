@@ -38,13 +38,13 @@ impl SlotMachine {
 
     pub fn proceed_state(&mut self, n: usize) {
         if n >= 3 {
-            self.first = SlotMachine::inc_wrapping(self.first);
+            self.third = SlotMachine::inc_wrapping(self.third);
         }
         if n >= 2 {
             self.second = SlotMachine::inc_wrapping(self.second);
         }
         if n >= 1 {
-            self.third = SlotMachine::inc_wrapping(self.third);
+            self.first = SlotMachine::inc_wrapping(self.first);
         }
         let mut changed_count: usize = 0;
         for x in [FIRST_OFFSET, SECOND_OFFSET, THIRD_OFFSET] {
@@ -62,6 +62,7 @@ impl SlotMachine {
             stdout().write(to_write.as_slice()).unwrap();
             stdout().flush().unwrap();
             SlotMachine::magic();
+            changed_count += 1;
         }
     }
 
