@@ -3,6 +3,9 @@ use rand::RngCore;
 use rand::rngs::ThreadRng;
 
 const FORMAT_SYMBOL: &str = "X";
+const FIRST_OFFSET: usize = 7;
+const SECOND_OFFSET: usize = 13;
+const THIRD_OFFSET: usize = 19;
 const RED_SEVEN: &str = "\x1b[0;31m7\x1b[0m ";
 const CHERRY: &str = "🍒";
 const LEMON: &str = "🍋";
@@ -43,24 +46,22 @@ impl SlotMachine {
         if n >= 1 {
             self.third = SlotMachine::inc_wrapping(self.third);
         }
-        // let mut changed_count: usize = 0;
-        // let commands_to_emit = Vec::with_capacity(10);
-        let mut offset = 0;
-        for x in self.state.as_slice()[119..119 + 65 + 9 * 3].windows(4) {
-            if SlotMachine::contains_emoji(x) {
-                let place_cursor = format!("\x1B[4;{}f", offset + 5);
-                let place_cursor = place_cursor.as_bytes();
-                let toggle_insert_mode = "\x1B[2~".as_bytes();
-                let emoji = SYMBOLS[self.first].as_bytes();
-                let to_write = [place_cursor, toggle_insert_mode, emoji, toggle_insert_mode].concat();
-                stdout().write(to_write.as_slice()).unwrap();
-                stdout().flush().unwrap();
-                SlotMachine::magic();
-                break;
-            } else if x.starts_with("7".as_bytes()) {
-                // println!("amg");
-            }
-            offset += 1;
+        let mut changed_count: usize = 0;
+        for x in [FIRST_OFFSET, SECOND_OFFSET, THIRD_OFFSET] {
+            let place_cursor = format!("\x1B[4;{}f", x);
+            let place_cursor = place_cursor.as_bytes();
+            let backspace = "\x08";
+            let symbol = if changed_count == 0 {
+                SYMBOLS[self.third]
+            } else if changed_count == 1 {
+                SYMBOLS[self.second]
+            } else {
+                SYMBOLS[self.first]
+            };
+            let to_write = [place_cursor, backspace.as_bytes(), symbol.as_bytes()].concat();
+            stdout().write(to_write.as_slice()).unwrap();
+            stdout().flush().unwrap();
+            SlotMachine::magic();
         }
     }
 
@@ -104,3 +105,14 @@ impl SlotMachine {
         println!();
     }
 }
+/*
+serhii@s-lekariev debug % ./gamba
+      ༼ つ ° ͟ل͜ ° ༽つ
+  ╔═════╦═════╦═════╗      ▁▁▁▁
+  ║  🍋 ║  🍒 ║  🍒 ║══════████
+  ╚═════╩═════╩═════╝      ▔▔▔▔
+  ▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒▒
+
+6
+
+ */
