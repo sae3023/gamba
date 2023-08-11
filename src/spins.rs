@@ -3,6 +3,8 @@ use std::time::Duration;
 use crate::gamba::SlotMachine;
 
 pub fn one_two_three_spin() {
+    let clear_screen = format!("{}{}", "\x1b[1;1H", "\x1b[2J");
+    print!("{}", clear_screen);
     let mut rng = rand::thread_rng();
     let mut machine = SlotMachine::initialize_at_random(&mut rng);
     let sleep_duration = Duration::from_millis(150);
